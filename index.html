@@ -433,20 +433,21 @@
             var namaLokasi = feature.properties['nama'] ? feature.properties['nama'].toLowerCase() : '';
             var popupContent = '';
 
-            // Pengecekan kata "gunung 7" atau "gunung tujuh"
-            if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
-                popupContent = `
-                    <div style="width: 280px;">
-                        <h6 class="fw-bold text-success mb-2">${feature.properties['nama']}</h6>
-                        <p class="small text-muted mb-2">${feature.properties['keterangan'] || ''}</p>
-                        <div class="row g-1 mb-2">
-                            <div class="col-6"><img src="images/danau_gunung_tujuh_1.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 1"></div>
-                            <div class="col-6"><img src="images/danau_gunung_tujuh_2.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 2"></div>
-                            <div class="col-6"><img src="images/danau_gunung_tujuh_3.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 3"></div>
-                            <div class="col-6"><img src="images/danau_gunung_tujuh_4.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 4"></div>
-                        </div>
-                    </div>
-                `;
+// Pengecekan kata "gunung 7" atau "gunung tujuh"
+if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
+    popupContent = `
+        <div style="width: 280px;">
+            <h6 class="fw-bold text-success mb-2">${feature.properties['nama']}</h6>
+            <p class="small text-muted mb-2">${feature.properties['keterangan'] || ''}</p>
+            <div class="row g-1 mb-2">
+                <div class="col-6"><img src="danau_gunung_tujuh_1.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 1"></div>
+                <div class="col-6"><img src="danau_gunung_tujuh_2.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 2"></div>
+                <div class="col-6"><img src="danau_gunung_tujuh_3.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 3"></div>
+                <div class="col-6"><img src="danau_gunung_tujuh_4.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 4"></div>
+            </div>
+        </div>
+    `;
+}
             } else {
                 popupContent = '<table class="table table-sm table-striped">\
                         <tr>\

@@ -11,7 +11,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- FontAwesome for Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <!-- Google Fonts: Plus Jakarta Sans untuk kesan modern & estetik -->
+        <!-- Google Fonts: Plus Jakarta Sans -->
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Leaflet & QGIS2Web CSS -->
@@ -43,7 +43,7 @@
                 width: 100%;
                 height: 100%;
             }
-            /* Styling Sidebar Kanan dengan Nuansa Alam Eksklusif */
+            /* Styling Sidebar Kanan */
             #sidebar {
                 width: 420px;
                 height: 100%;
@@ -241,7 +241,7 @@
                 </div>
             </div>
 
-            <!-- Footer Sidebar: Dibuat Oleh -->
+            <!-- Footer Sidebar -->
             <div class="p-3 bg-white border-top text-center text-muted small shadow-sm">
                 <p class="mb-1 fw-semibold text-dark" style="font-size: 12px;">
                     <i class="fa-solid fa-code text-success me-1"></i> Dikembangkan oleh:
@@ -289,29 +289,30 @@
             } else {
               highlightLayer.setStyle({
                 fillColor: 'rgba(255, 255, 0, 1.00)',
-                fillOpacity: 1
+                fillOpacity: 0.95
               });
             }
         }
+
         var map = L.map('map', {
             zoomControl:false, maxZoom:28, minZoom:1
-        })
+        });
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
-        
+
         function removeEmptyRowsFromPopupContent(content, feature) {
-         var tempDiv = document.createElement('div');
-         tempDiv.innerHTML = content;
-         var rows = tempDiv.querySelectorAll('tr');
-         for (var i = 0; i < rows.length; i++) {
-             var td = rows[i].querySelector('td.visible-with-data');
-             var key = td ? td.id : '';
-             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
-                 rows[i].parentNode.removeChild(rows[i]);
-             }
-         }
-         return tempDiv.innerHTML;
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            var rows = tempDiv.querySelectorAll('tr');
+            for (var i = 0; i < rows.length; i++) {
+                var td = rows[i].querySelector('td.visible-with-data');
+                var key = td ? td.id : '';
+                if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                    rows[i].parentNode.removeChild(rows[i]);
+                }
+            }
+            return tempDiv.innerHTML;
         }
 
         function addClassToPopupIfMedia(content, popup) {
@@ -322,67 +323,30 @@
                 var src = imgTd.getAttribute('src');
                 if (/\.(jpg|jpeg|png|gif|bmp|webp|avif)$/i.test(src)) {
                     popup._contentNode.classList.add('media');
-                    setTimeout(function() {
-                        popup.update();
-                    }, 10);
-                } else if (/\.(mp3|wav|ogg|aac)$/i.test(src)) {
-                    var audio = document.createElement('audio');
-                    audio.controls = true;
-                    audio.src = src;
-                    imgTd.parentNode.replaceChild(audio, imgTd);
-                    popup._contentNode.classList.add('media');
-                    setTimeout(function() {
-                        popup.setContent(tempDiv.innerHTML);
-                        popup.update();
-                    }, 10);
-                } else if (/\.(mp4|webm|ogg|mov)$/i.test(src)) {
-                    var video = document.createElement('video');
-                    video.controls = true;
-                    video.src = src;
-                    video.style.width = "400px";
-                    video.style.height = "300px";
-                    video.style.maxHeight = "60vh";
-                    video.style.maxWidth = "60vw";
-                    imgTd.parentNode.replaceChild(video, imgTd);
-                    popup._contentNode.classList.add('media');
-                    video.addEventListener('loadedmetadata', function() {
-                        popup.update();
-                    });
-                    setTimeout(function() {
-                        popup.setContent(tempDiv.innerHTML);
-                        popup.update();
-                    }, 10);
-                } else {
-                    popup._contentNode.classList.remove('media');
+                    setTimeout(function() { popup.update(); }, 10);
                 }
-            } else {
-                popup._contentNode.classList.remove('media');
             }
         }
 
-        var zoomControl = L.control.zoom({
-            position: 'topleft'
-        }).addTo(map);
+        var zoomControl = L.control.zoom({ position: 'topleft' }).addTo(map);
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
             if (bounds_group.getLayers().length) {
                 map.fitBounds(bounds_group.getBounds());
             }
         }
+
         map.createPane('pane_OSMStandard_0');
         map.getPane('pane_OSMStandard_0').style.zIndex = 400;
         var layer_OSMStandard_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             pane: 'pane_OSMStandard_0',
             opacity: 1.0,
-            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
-            minZoom: 1,
-            maxZoom: 28,
-            minNativeZoom: 0,
-            maxNativeZoom: 19
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>',
+            minZoom: 1, maxZoom: 28, minNativeZoom: 0, maxNativeZoom: 19
         });
-        layer_OSMStandard_0;
         map.addLayer(layer_OSMStandard_0);
 
+        // Layer ADM (Wilayah Administrasi)
         function pop_ADM_ADM_3_1(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -396,11 +360,11 @@
             });
             var popupContent = '<table class="table table-sm table-striped">\
                     <tr>\
-                        <th scope="row">NAME_2</th>\
+                        <th scope="row">Kabupaten/Kota</th>\
                         <td class="visible-with-data" id="NAME_2">' + (feature.properties['NAME_2'] !== null ? autolinker.link(String(feature.properties['NAME_2']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">NAME_3</th>\
+                        <th scope="row">Kecamatan</th>\
                         <td class="visible-with-data" id="NAME_3">' + (feature.properties['NAME_3'] !== null ? autolinker.link(String(feature.properties['NAME_3']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
@@ -411,18 +375,30 @@
             layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_ADM_ADM_3_1_0() {
+        // Generator warna HSL agar warna kecamatan pekat & jenuh
+        function getColorForKecamatan(str) {
+            if (!str) return 'hsl(140, 70%, 40%)';
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            var hue = Math.abs(hash % 360);
+            return 'hsl(' + hue + ', 85%, 48%)';
+        }
+
+        function style_ADM_ADM_3_1_0(feature) {
+            var name3 = feature && feature.properties ? feature.properties['NAME_3'] : '';
             return {
                 pane: 'pane_ADM_ADM_3_1',
                 opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
+                color: '#1a1a1a',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1.0, 
+                weight: 1.5, 
                 fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(142,60,8,1.0)',
+                fillOpacity: 0.85, // Diubah menjadi 0.85 agar sangat pekat
+                fillColor: getColorForKecamatan(name3),
                 interactive: true,
             }
         }
@@ -441,6 +417,7 @@
         bounds_group.addLayer(layer_ADM_ADM_3_1);
         map.addLayer(layer_ADM_ADM_3_1);
 
+        // Layer Wisata Alam (Fitur Khusus Pop-up 4 Foto Gunung Tujuh)
         function pop_wisataalam_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -452,21 +429,42 @@
                 },
                 mouseover: highlightFeature,
             });
-            var popupContent = '<table class="table table-sm table-striped">\
-                    <tr>\
-                        <th scope="row">nama</th>\
-                        <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">keterangan</th>\
-                        <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                </table>';
-            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+
+            var namaLokasi = feature.properties['nama'] ? feature.properties['nama'].toLowerCase() : '';
+            var popupContent = '';
+
+            // Pengecekan kata "gunung 7" atau "gunung tujuh"
+            if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
+                popupContent = `
+                    <div style="width: 280px;">
+                        <h6 class="fw-bold text-success mb-2">${feature.properties['nama']}</h6>
+                        <p class="small text-muted mb-2">${feature.properties['keterangan'] || ''}</p>
+                        <div class="row g-1 mb-2">
+                            <div class="col-6"><img src="images/danau_gunung_tujuh_1.jpg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 1"></div>
+                            <div class="col-6"><img src="images/danau_gunung_tujuh_2.jpg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 2"></div>
+                            <div class="col-6"><img src="images/danau_gunung_tujuh_3.jpg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 3"></div>
+                            <div class="col-6"><img src="images/danau_gunung_tujuh_4.jpg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 4"></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                popupContent = '<table class="table table-sm table-striped">\
+                        <tr>\
+                            <th scope="row">nama</th>\
+                            <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        </tr>\
+                        <tr>\
+                            <th scope="row">keterangan</th>\
+                            <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        </tr>\
+                    </table>';
+                popupContent = removeEmptyRowsFromPopupContent(popupContent, feature);
+            }
+
             layer.on('popupopen', function(e) {
-                addClassToPopupIfMedia(content, e.popup);
+                addClassToPopupIfMedia(popupContent, e.popup);
             });
-            layer.bindPopup(content, { maxHeight: 400 });
+            layer.bindPopup(popupContent, { maxWidth: 320, maxHeight: 400 });
         }
 
         function style_wisataalam_2_0() {
@@ -498,6 +496,7 @@
         bounds_group.addLayer(layer_wisataalam_2);
         map.addLayer(layer_wisataalam_2);
 
+        // Wisata Kuliner
         function pop_wisatakuliner_3(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -510,23 +509,12 @@
                 mouseover: highlightFeature,
             });
             var popupContent = '<table class="table table-sm table-striped">\
-                    <tr>\
-                        <th scope="row">nama</th>\
-                        <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">alamat</th>\
-                        <td class="visible-with-data" id="alamat">' + (feature.properties['alamat'] !== null ? autolinker.link(String(feature.properties['alamat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">keterangan</th>\
-                        <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
+                    <tr><th scope="row">nama</th><td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">alamat</th><td class="visible-with-data" id="alamat">' + (feature.properties['alamat'] !== null ? autolinker.link(String(feature.properties['alamat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">keterangan</th><td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-            layer.on('popupopen', function(e) {
-                addClassToPopupIfMedia(content, e.popup);
-            });
+            layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
             layer.bindPopup(content, { maxHeight: 400 });
         }
 
@@ -535,10 +523,7 @@
                 pane: 'pane_wisatakuliner_3',
                 rotationAngle: 0.0,
                 rotationOrigin: 'center center',
-                icon: L.icon({
-                    iconUrl: 'markers/wisatakuliner_3.svg',
-                    iconSize: [38.0, 38.0]
-                }),
+                icon: L.icon({ iconUrl: 'markers/wisatakuliner_3.svg', iconSize: [38.0, 38.0] }),
                 interactive: true,
             }
         }
@@ -559,6 +544,7 @@
         bounds_group.addLayer(layer_wisatakuliner_3);
         map.addLayer(layer_wisatakuliner_3);
 
+        // Situs Budaya
         function pop_situsbudaya_4(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -571,19 +557,11 @@
                 mouseover: highlightFeature,
             });
             var popupContent = '<table class="table table-sm table-striped">\
-                    <tr>\
-                        <th scope="row">nama</th>\
-                        <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">keterangan</th>\
-                        <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
+                    <tr><th scope="row">nama</th><td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">keterangan</th><td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-            layer.on('popupopen', function(e) {
-                addClassToPopupIfMedia(content, e.popup);
-            });
+            layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
             layer.bindPopup(content, { maxHeight: 400 });
         }
 
@@ -592,10 +570,7 @@
                 pane: 'pane_situsbudaya_4',
                 rotationAngle: 0.0,
                 rotationOrigin: 'center center',
-                icon: L.icon({
-                    iconUrl: 'markers/situsbudaya_4.svg',
-                    iconSize: [26.599999999999998, 26.599999999999998]
-                }),
+                icon: L.icon({ iconUrl: 'markers/situsbudaya_4.svg', iconSize: [26.6, 26.6] }),
                 interactive: true,
             }
         }
@@ -616,6 +591,7 @@
         bounds_group.addLayer(layer_situsbudaya_4);
         map.addLayer(layer_situsbudaya_4);
 
+        // Penginapan
         function pop_penginapan_5(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -628,19 +604,11 @@
                 mouseover: highlightFeature,
             });
             var popupContent = '<table class="table table-sm table-striped">\
-                    <tr>\
-                        <th scope="row">nama</th>\
-                        <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">keterangan</th>\
-                        <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
+                    <tr><th scope="row">nama</th><td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">keterangan</th><td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-            layer.on('popupopen', function(e) {
-                addClassToPopupIfMedia(content, e.popup);
-            });
+            layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
             layer.bindPopup(content, { maxHeight: 400 });
         }
 
@@ -649,10 +617,7 @@
                 pane: 'pane_penginapan_5',
                 rotationAngle: 0.0,
                 rotationOrigin: 'center center',
-                icon: L.icon({
-                    iconUrl: 'markers/penginapan_5.svg',
-                    iconSize: [26.599999999999998, 26.599999999999998]
-                }),
+                icon: L.icon({ iconUrl: 'markers/penginapan_5.svg', iconSize: [26.6, 26.6] }),
                 interactive: true,
             }
         }
@@ -673,6 +638,7 @@
         bounds_group.addLayer(layer_penginapan_5);
         map.addLayer(layer_penginapan_5);
 
+        // Oleh-Oleh
         function pop_oleh2_6(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -685,23 +651,12 @@
                 mouseover: highlightFeature,
             });
             var popupContent = '<table class="table table-sm table-striped">\
-                    <tr>\
-                        <th scope="row">nama</th>\
-                        <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">alamat</th>\
-                        <td class="visible-with-data" id="alamat">' + (feature.properties['alamat'] !== null ? autolinker.link(String(feature.properties['alamat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">keterangan</th>\
-                        <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
+                    <tr><th scope="row">nama</th><td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">alamat</th><td class="visible-with-data" id="alamat">' + (feature.properties['alamat'] !== null ? autolinker.link(String(feature.properties['alamat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
+                    <tr><th scope="row">keterangan</th><td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-            layer.on('popupopen', function(e) {
-                addClassToPopupIfMedia(content, e.popup);
-            });
+            layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
             layer.bindPopup(content, { maxHeight: 400 });
         }
 
@@ -710,10 +665,7 @@
                 pane: 'pane_oleh2_6',
                 rotationAngle: 0.0,
                 rotationOrigin: 'center center',
-                icon: L.icon({
-                    iconUrl: 'markers/oleh2_6.svg',
-                    iconSize: [30.4, 30.4]
-                }),
+                icon: L.icon({ iconUrl: 'markers/oleh2_6.svg', iconSize: [30.4, 30.4] }),
                 interactive: true,
             }
         }
@@ -734,26 +686,35 @@
         bounds_group.addLayer(layer_oleh2_6);
         map.addLayer(layer_oleh2_6);
 
-        // Fungsi Presisi untuk Menempatkan Titik Tepat di Tengah Layar Peta
-        function focusToFeature(layer, latlng) {
-            map.flyTo(latlng, 17, {
-                animate: true,
-                duration: 1.0
-            });
+        // Fungsi Menyesuaikan Zoom Berdasarkan Jenis Layer (Point vs Polygon)
+        function focusToFeature(layer, isPolygon) {
+            if (isPolygon && layer.getBounds) {
+                map.fitBounds(layer.getBounds(), {
+                    padding: [30, 30],
+                    maxZoom: 12,
+                    animate: true,
+                    duration: 1.0
+                });
+            } else {
+                var latlng = layer.getLatLng ? layer.getLatLng() : layer.getBounds().getCenter();
+                map.flyTo(latlng, 15, {
+                    animate: true,
+                    duration: 1.0
+                });
+            }
 
             setTimeout(function() {
                 layer.openPopup();
             }, 800);
         }
 
-        // Otomatis Mengisi Daftar Dropdown Sidebar Berdasarkan Data di Peta
-        function populateSidebarList(geoJsonLayer, containerId, nameProperty) {
+        // Mengisi Daftar Sidebar
+        function populateSidebarList(geoJsonLayer, containerId, nameProperty, isPolygon) {
             var container = document.getElementById(containerId);
             container.innerHTML = "";
             geoJsonLayer.eachLayer(function(layer) {
                 var props = layer.feature.properties;
                 var name = props[nameProperty] || "Tanpa Nama";
-                var latlng = layer.getLatLng ? layer.getLatLng() : layer.getBounds().getCenter();
                 
                 var item = document.createElement('a');
                 item.href = "#";
@@ -761,7 +722,7 @@
                 item.innerHTML = `<i class="fa-solid fa-location-dot text-success me-2"></i> ${name}`;
                 item.onclick = function(e) {
                     e.preventDefault();
-                    focusToFeature(layer, latlng);
+                    focusToFeature(layer, isPolygon);
                 };
                 container.appendChild(item);
             });
@@ -770,14 +731,15 @@
             }
         }
 
-        // Jalankan saat halaman selesai dimuat untuk mengisi list kategori
+        // Inisialisasi Sidebar saat Halaman Siap
         window.addEventListener('DOMContentLoaded', function() {
-            populateSidebarList(layer_oleh2_6, 'list-oleh2', 'nama');
-            populateSidebarList(layer_penginapan_5, 'list-penginapan', 'nama');
-            populateSidebarList(layer_situsbudaya_4, 'list-budaya', 'nama');
-            populateSidebarList(layer_wisatakuliner_3, 'list-kuliner', 'nama');
-            populateSidebarList(layer_wisataalam_2, 'list-alam', 'nama');
-            populateSidebarList(layer_ADM_ADM_3_1, 'list-admin', 'NAME_3');
+            populateSidebarList(layer_oleh2_6, 'list-oleh2', 'nama', false);
+            populateSidebarList(layer_penginapan_5, 'list-penginapan', 'nama', false);
+            populateSidebarList(layer_situsbudaya_4, 'list-budaya', 'nama', false);
+            populateSidebarList(layer_wisatakuliner_3, 'list-kuliner', 'nama', false);
+            populateSidebarList(layer_wisataalam_2, 'list-alam', 'nama', false);
+            
+            populateSidebarList(layer_ADM_ADM_3_1, 'list-admin', 'NAME_3', true);
         });
 
         var overlaysTree = [
@@ -788,10 +750,9 @@
             {label: '<img src="legend/wisataalam_2.png" /> wisata alam', layer: layer_wisataalam_2},
             {label: '<img src="legend/ADM_ADM_3_1.png" /> ADM_ADM_3', layer: layer_ADM_ADM_3_1},
             {label: "OSM Standard", layer: layer_OSMStandard_0},
-        ]
-        var lay = L.control.layers.tree(null, overlaysTree,{
-            collapsed: true,
-        });
+        ];
+
+        var lay = L.control.layers.tree(null, overlaysTree,{ collapsed: true });
         lay.addTo(map);
         setBounds();
         </script>

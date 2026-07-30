@@ -75,7 +75,12 @@
                 color: #134e32;
                 transform: translateX(2px);
             }
-            /* Kustomisasi tabel popup Leaflet */
+            /* Kustomisasi tabel & konten popup Leaflet */
+            .leaflet-popup-content {
+                margin: 12px !important;
+                max-height: 600px !important;
+                overflow-y: auto !important;
+            }
             .leaflet-popup-content table {
                 width: 100%;
                 margin-bottom: 0 !important;
@@ -133,7 +138,7 @@
                         
                         <!-- Bootstrap Accordion untuk Dropdown Menu Berisi Daftar Titik -->
                         <div class="accordion accordion-flush" id="layerAccordion">
-                        
+                            
                             <!-- Pusat Oleh-oleh -->
                             <div class="accordion-item bg-transparent">
                                 <h2 class="accordion-header" id="headingOleh2">
@@ -397,7 +402,7 @@
                 lineJoin: 'miter',
                 weight: 1.5, 
                 fill: true,
-                fillOpacity: 0.85, // Diubah menjadi 0.85 agar sangat pekat
+                fillOpacity: 0.85,
                 fillColor: getColorForKecamatan(name3),
                 interactive: true,
             }
@@ -417,7 +422,7 @@
         bounds_group.addLayer(layer_ADM_ADM_3_1);
         map.addLayer(layer_ADM_ADM_3_1);
 
-        // Layer Wisata Alam (Fitur Khusus Pop-up 4 Foto Gunung Tujuh)
+        // Layer Wisata Alam
         function pop_wisataalam_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -433,23 +438,30 @@
             var namaLokasi = feature.properties['nama'] ? feature.properties['nama'].toLowerCase() : '';
             var popupContent = '';
 
-// Pengecekan kata "gunung 7" atau "gunung tujuh"
-if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
-    popupContent = `
-        <div style="width: 280px;">
-            <h6 class="fw-bold text-success mb-2">${feature.properties['nama']}</h6>
-            <p class="small text-muted mb-2">${feature.properties['keterangan'] || ''}</p>
-            <div class="row g-1 mb-2">
-                <div class="col-6"><img src="danau_gunung_tujuh_1.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 1"></div>
-                <div class="col-6"><img src="danau_gunung_tujuh_2.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 2"></div>
-                <div class="col-6"><img src="danau_gunung_tujuh_3.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 3"></div>
-                <div class="col-6"><img src="danau_gunung_tujuh_4.jpeg" class="img-fluid rounded border" style="height: 85px; width:100%; object-fit: cover;" alt="Foto 4"></div>
-            </div>
-        </div>
-    `;
-}
+            // Pengecekan kata "gunung 7" atau "gunung tujuh"
+            if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
+                popupContent = `
+                    <div style="width: 340px;" class="p-1">
+                        <h5 class="fw-bold text-success mb-1">${feature.properties['nama']}</h5>
+                        <p class="small text-muted mb-2">${feature.properties['keterangan'] || 'Wisata Alam'}</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <img src="gunung_tujuh_1.jpeg" class="img-fluid rounded border shadow-sm w-100" style="height: auto; max-height: 150px; display: block;" alt="Foto 1">
+                            </div>
+                            <div class="col-6">
+                                <img src="gunung_tujuh_2.jpeg" class="img-fluid rounded border shadow-sm w-100" style="height: auto; max-height: 150px; display: block;" alt="Foto 2">
+                            </div>
+                            <div class="col-6">
+                                <img src="gunung_tujuh_3.jpeg" class="img-fluid rounded border shadow-sm w-100" style="height: auto; max-height: 150px; display: block;" alt="Foto 3">
+                            </div>
+                            <div class="col-6">
+                                <img src="gunung_tujuh_4.jpeg" class="img-fluid rounded border shadow-sm w-100" style="height: auto; max-height: 150px; display: block;" alt="Foto 4">
+                            </div>
+                        </div>
+                    </div>
+                `;
             } else {
-                popupContent = '<table class="table table-sm table-striped">\
+                var rawTable = '<table class="table table-sm table-striped">\
                         <tr>\
                             <th scope="row">nama</th>\
                             <td class="visible-with-data" id="nama">' + (feature.properties['nama'] !== null ? autolinker.link(String(feature.properties['nama']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
@@ -459,13 +471,13 @@ if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
                             <td class="visible-with-data" id="keterangan">' + (feature.properties['keterangan'] !== null ? autolinker.link(String(feature.properties['keterangan']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                         </tr>\
                     </table>';
-                popupContent = removeEmptyRowsFromPopupContent(popupContent, feature);
+                popupContent = removeEmptyRowsFromPopupContent(rawTable, feature);
             }
 
             layer.on('popupopen', function(e) {
                 addClassToPopupIfMedia(popupContent, e.popup);
             });
-            layer.bindPopup(popupContent, { maxWidth: 320, maxHeight: 400 });
+            layer.bindPopup(popupContent, { maxWidth: 380, maxHeight: 600 });
         }
 
         function style_wisataalam_2_0() {
@@ -756,6 +768,9 @@ if (namaLokasi.includes('gunung 7') || namaLokasi.includes('gunung tujuh')) {
         var lay = L.control.layers.tree(null, overlaysTree,{ collapsed: true });
         lay.addTo(map);
         setBounds();
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 500);
         </script>
     </body>
 </html>
